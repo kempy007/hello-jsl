@@ -9,7 +9,8 @@ class webhook implements Serializable {
     def contentType = "\"Content-Type: application/json\""
     def message = "Hello World"
     def jsonWrap = "\"{\"text\": \"${message}\"}\""
-    steps.sh "curl -H ${contentType} -d ${jsonWrap} ${url}"
+    def cmd = "curl -H ${contentType} -d ${jsonWrap} ${url}"
+    steps.sh "ping localhost"
      return "Webhook sent"
   }
 
