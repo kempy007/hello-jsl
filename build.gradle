@@ -1,0 +1,96 @@
+import com.lesfurets.gradle.*
+
+plugins {
+    id "com.jfrog.artifactory" version "4.11.0"
+    id 'groovy'
+    id 'maven-publish'
+    id 'java'
+    id 'jacoco'
+}
+
+repositories {
+  mavenCentral()
+  jcenter()
+  maven { url 'https://repo.jenkins-ci.org/releases/' }
+}
+
+group = "com.lesfurets"
+archivesBaseName = "jenkins-pipeline-unit"
+version = "1.3-SNAPSHOT"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// Grape configuration is used to test @Grape annotation in unit tests using grapeConfig.xml
+//configurations {
+//    grape { // Note our simple use case does not use or support transitive dependencies
+//        transitive = false
+//    }
+//}
+
+dependencies {
+	compile group: 'com.lesfurets', name:'jenkins-pipeline-unit', version:'1.2'
+    compile     group: 'org.codehaus.groovy',   name: 'groovy-all',     version: '2.5.8'
+    compile     group: 'com.cloudbees',         name: 'groovy-cps',     version: '1.12'
+    compile     group: 'commons-io',            name: 'commons-io',     version: '2.5'
+    compile     group: 'org.apache.ivy',        name: 'ivy',            version: '2.4.0'
+    compile     group: 'org.assertj',           name: 'assertj-core',   version: '3.4.1'
+    compile     group: 'org.apache.commons',    name: 'commons-lang3',  version: '3.5'
+    compile group: 'org.assertj',           name: 'assertj-core',   version: '3.4.1'
+    compile group: 'junit',                 name: 'junit',          version: '4.11'
+//    grape       group: 'org.apache.commons',    name: 'commons-math3',  version: '3.4.1'
+}
+
+// Get external properties from file
+//if (project.hasProperty('extProps')) {
+//    def props = new Properties()
+//    file("$extProps").withInputStream { props.load(it) }
+//    props.stringPropertyNames().forEach {
+//        ext."$it" = props.getProperty(it)
+//    }
+//}
+
+sourceSets {
+    test {
+      groovy {
+        srcDirs = ['test']
+      }
+    }
+//    compileClasspath += sourceSets.main.output
+//    runtimeClasspath += sourceSets.main.output
+}
+
+defaultTasks 'test'
+
+//task javadocJar(type: Jar) {
+//    classifier = 'javadoc'
+//    from groovydoc
+//}
+
+//task sourcesJar(type: Jar) {
+//    classifier = 'sources'
+//    from sourceSets.main.allSource
+//}
+
+
+//test.dependsOn copyGrapesDependencies
+
+test {
+//    systemProperty "grape.config", "$projectDir/grapeConfig.xml"
+//    systemProperty "grape.home", file("$buildDir/grapes").toURI()
+    // Settings for debugging @Grape() resolution in test cases
+    //systemProperty "groovy.grape.report.downloads", "true"
+    //systemProperty "ivy.message.logger.level", "4"
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+
